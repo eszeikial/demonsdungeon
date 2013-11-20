@@ -50,6 +50,11 @@ public class WallScript : MonoBehaviour {
 		return yLoc;	
 	}
 	
+	public void SetSize(float val)
+	{
+		trans.localScale = new Vector3(val,val,val);
+	}
+	
 	// Update is called once per frame
 	void Update () {
 		

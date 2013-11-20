@@ -3,12 +3,16 @@ using System.Collections;
 
 public class WallManager: MonoBehaviour {
 	
+	
+	/* //OLD CODE
 	//public variables
 	public float mapSize;
 	public float scale;
 	public GameObject XWall;
 	public GameObject ZWall;
 	public GameObject Pillar;
+	
+	public GameObject WallGO;
 	
 	//private variables
 	GameObject[][] pillarArray;
@@ -130,4 +134,84 @@ public class WallManager: MonoBehaviour {
 			ws.SetHeight(1.0f);	
 		}
 	}
+	*/
+	
+	//Public Vars. These are modified in the unity editor.
+	public GameObject WallGO;
+	public int mazeSize; // Number of blocks to create on X and Z axis.
+	public float wallSize; // How large should the cubes be?
+	
+	//Private Vars
+	private GameObject[][] WallArray; // contains the actual walls.
+ 	private float[][] wallState; // Value can be 0.0-1.0. 0 being all the way to the ground, 1 being fully raised.
+	private System.Random rng;
+	
+	private GameObject parent;
+	
+	void Start()
+	{
+		rng = new System.Random();
+		parent = GameObject.Find("WallManagerGO");
+		
+		//Wall generation
+		WallArray = new GameObject[mazeSize][];
+		wallState = new float[mazeSize][];
+		for(int i = 0; i < mazeSize ; i++)
+		{
+			WallArray[i] = new GameObject[mazeSize];
+			wallState[i] = new float[mazeSize];
+			
+			for(int j = 0; j < mazeSize; j++)
+			{
+				WallArray[i][j]  = (GameObject)Object.Instantiate
+					(WallGO, new Vector3(i*wallSize,wallSize/2,j*wallSize),Quaternion.identity);
+				WallArray[i][j].transform.parent = parent.transform; //sets the GO neatly in heiarchy. 
+				
+				//Decide if wall is raised or not.
+				int rnd = rng.Next()%2;
+				wallState[i][j] = (float)rnd;
+				
+				//Editing the script component
+				WallScript currentWall = WallArray[i][j].GetComponent<WallScript>();
+				currentWall.Setup(i,j,-wallSize/2,wallSize/2); //gives the wall info about itself, like its location, max/min height.
+				currentWall.SetParent(WallArray[i][j]); // lets the object know about itself.
+				currentWall.SetHeight((float)rnd); // sets height.
+				currentWall.SetSize(wallSize); // sets the cube's size.
+			}
+		}
+		
+		
+		//Outside wall Gen.
+		GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		GameObject zMaxWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		GameObject zMinWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		GameObject xMaxWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		GameObject xMinWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+		
+		float fullDist = (mazeSize * wallSize);
+		float halfDist = (fullDist) /2;
+		float permWallHeight = wallSize*2;
+		
+		//floor - Might not even be necessary? - Wait yes it is. - WAIT NO ITS NOT.
+		floor.transform.position = new Vector3(halfDist,-.5f,halfDist);
+		floor.transform.localScale = new Vector3(fullDist,1,fullDist);
+		
+		//other walls - should be working!
+		zMaxWall.transform.position = new Vector3(halfDist,permWallHeight/2,fullDist);
+		zMaxWall.transform.localScale = new Vector3(fullDist+wallSize,permWallHeight,wallSize);
+		
+		zMinWall.transform.position = new Vector3(halfDist,permWallHeight/2,-wallSize);
+		zMinWall.transform.localScale = new Vector3(fullDist+wallSize,permWallHeight,wallSize);
+		
+		xMaxWall.transform.position = new Vector3(fullDist,permWallHeight/2,halfDist);
+		xMaxWall.transform.localScale = new Vector3(wallSize,permWallHeight,fullDist+wallSize);
+		
+		xMinWall.transform.position = new Vector3(-wallSize,permWallHeight/2,halfDist);
+		xMinWall.transform.localScale = new Vector3(wallSize,permWallHeight,fullDist+wallSize);
+		
+		
+		
+	}
+	
+	
 }
