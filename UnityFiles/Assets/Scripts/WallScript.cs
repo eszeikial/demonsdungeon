@@ -50,6 +50,10 @@ public class WallScript : MonoBehaviour {
 		return yLoc;	
 	}
 	
+	public int getRow(){return row;}
+	
+	public int getCol(){return col;}
+	
 	public void SetSize(float val)
 	{
 		trans.localScale = new Vector3(val,val,val);
