@@ -24,8 +24,7 @@ public class NetworkManager : MonoBehaviour
 	
 	//is the game going?
 	private bool isGameActive = false;
-	private float totalGameTime = 300; //five minutes
-	private float gameStart;
+	//private float gameStart;
 	
 	//connect window setup
 	private Rect connectWindowRect;
@@ -62,8 +61,8 @@ public class NetworkManager : MonoBehaviour
 	{
 		if(!isGameActive)
 		{
-			//We want to make sure all participating players are connected before starting the game clock
-			if(numPlayersConnected >= 3)
+			//We want to make sure all participating players are connected before starting the game
+			if(numPlayersConnected >= 4)
 			{
 				//call gameStart
 				networkView.RPC("StartGame", RPCMode.AllBuffered); 
@@ -77,11 +76,8 @@ public class NetworkManager : MonoBehaviour
 	{
 		if(isGameActive)
 		{
-			//will need to add the other case where all the mage players are caught
-			if(Time.time - gameStart > totalGameTime)
-			{
-				return true;
-			}
+			//game can end by players collecting all the relics or the demon catching all the players
+			
 		}
 		return false;
 	}
@@ -100,6 +96,7 @@ public class NetworkManager : MonoBehaviour
 	void OnServerInitialized ()
 	{
 		Debug.Log("Server is initialzed.");
+		GameObject.Find("WallManagerGO").GetComponent<WallManager>().MakeWalls();
 		MakePlayer();
 	}
 	
@@ -107,6 +104,8 @@ public class NetworkManager : MonoBehaviour
 	void OnPlayerConnected (NetworkPlayer player)
 	{
 		Debug.Log ("Player " + player + " connected from " + player.ipAddress + ":" + player.port);
+		//GameObject.Find("WallManagerGO").GetComponent<WallManager>().MakeWalls(); //do this for now so we can try to display multiplayer
+		MakePlayer();
 	}
 	
 	///-----these messages are sent to the CLIENT
@@ -281,22 +280,22 @@ public class NetworkManager : MonoBehaviour
 	void MakePlayer()
 	{
 		GameObject spm = GameObject.Find("SpawnManagerGO");
-		//GameObject go = spm.GetComponent<SpawnScript>().SpawnPlayer();
+		GameObject go = spm.GetComponent<SpawnScript>().SpawnPlayer();
 		int matIndex = int.Parse(Network.player.ToString()) % 3; //increment through the materials
 		Debug.Log("Material Index is " + matIndex);
-		//networkView.RPC("NewPlayer", RPCMode.AllBuffered, go.networkView.viewID, matIndex, playerName, pScore, Network.player); 
+		networkView.RPC("NewPlayer", RPCMode.AllBuffered, go.networkView.viewID, matIndex, playerName, Network.player); 
 	}
 	
 	[RPC]
-	void NewPlayer(NetworkViewID ID, int matIndex, string pName, int pScore, NetworkPlayer player)
+	void NewPlayer(NetworkViewID ID, int matIndex, string pName, NetworkPlayer player)
 	{
 		Debug.Log ("recieved rpc from " + pName + ", player " + player + ", go.ID:" + ID + ", MatIndex:" + matIndex);
 		
 		NetworkView view = NetworkView.Find(ID);
 		GameObject go = view.observed.gameObject;
 		go.name = pName;
-		GameObject.Find(go.name + "/Body").renderer.material = materials[matIndex];
-		go.GetComponent<PlayerLabel>().PlayerName = pName + " " + pScore.ToString();
+		//GameObject.Find(go.name + "/Body").renderer.material = materials[matIndex];
+		//go.GetComponent<PlayerLabel>().PlayerName = pName;
 	}
 	
 	
@@ -304,7 +303,6 @@ public class NetworkManager : MonoBehaviour
 	void StartGame()
 	{
 		isGameActive = true;
-		gameStart = Time.time;
 	}
 	
 	[RPC]

@@ -1,16 +1,140 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class WallManager: MonoBehaviour {
 	
-	struct space{
-	public int row;
-	public int col;
-	public int weight;
-	public int numAdjacentInPath;
-	public bool partOfPath;
-	};
+	
+	/* //OLD CODE
+	//public variables
+	public float mapSize;
+	public float scale;
+	public GameObject XWall;
+	public GameObject ZWall;
+	public GameObject Pillar;
+	
+	public GameObject WallGO;
+	
+	//private variables
+	GameObject[][] pillarArray;
+	GameObject[][] XWallArray;
+	GameObject[][] ZWallArray;
+	float[][] XWallState; //value is 0.0 - 1.0
+	float[][] ZWallState; //0 being down, 1 being entirely raised.
+	int numPieces;
+	GameObject parent;
+	
+	//randomizer
+	System.Random rng;
+	
+	/// <summary>
+	/// Creates the WallManager instance.
+	/// The maze objects are all created and added to the heiarchy neatly.
+	/// The walls are generated with a yLoc value of either 0 or 1, up or down.
+	/// </summary>
+	void Start () {
+		rng = new System.Random();
+		parent = GameObject.Find("WallManagerGO");
+		numPieces = (int)(mapSize/scale) - 1;
+		
+		//Creating pillars
+		pillarArray = new GameObject[numPieces][];
+		for(int i = 0; i < numPieces ; i++)
+		{
+			pillarArray[i] = new GameObject[numPieces];
+			
+			for(int j = 0; j < numPieces; j++)
+			{
+				pillarArray[i][j]  = (GameObject)Object.Instantiate
+					(Pillar, new Vector3(i*scale - (mapSize/2) + scale , 1, j*scale -(mapSize/2) + scale),Quaternion.identity);
+				pillarArray[i][j].transform.parent = parent.transform; //sets the GO neatly in heiarchy. 
+			}
+		}
+		
+		//Creating XWalls and data
+		XWallArray = new GameObject[numPieces+1][];
+		XWallState = new float[numPieces+1][];
+		for(int i = 0; i < numPieces+1; i++)
+		{
+			XWallArray[i] = new GameObject[numPieces];
+			XWallState[i] = new float[numPieces];
+			
+			for(int j = 0; j < numPieces; j++)
+			{
+				int rnd = rng.Next()%2; // Randomly decide if wall is raised or not.
+				
+				XWallArray[i][j]  = (GameObject)Object.Instantiate
+					(XWall, new Vector3(i*scale - (mapSize/2) + .5f * scale , 1, j*scale -(mapSize/2) + scale),Quaternion.identity);
+				XWallState[i][j] = 1.0f;
+				
+				XWallArray[i][j].transform.parent = parent.transform; //sets the GO neatly in heiarchy. 
+				XWallArray[i][j].GetComponent<WallScript>().Setup(i,j,.75f,-1.75f); //gives the wall info about itself, like its location, max/min height.
+				XWallArray[i][j].GetComponent<WallScript>().SetParent(XWallArray[i][j]); // lets the object know about itself.
+				XWallArray[i][j].GetComponent<WallScript>().SetHeight((float)rnd); // sets height.
+			}
+		}
+		
+		//Creating ZWalls and data
+		ZWallArray = new GameObject[numPieces][];
+		ZWallState = new float[numPieces][];
+		for(int i = 0; i < numPieces; i++)
+		{
+			ZWallArray[i] = new GameObject[numPieces+1];
+			ZWallState[i] = new float[numPieces+1];
+			for(int j = 0; j < numPieces+1; j++)
+			{
+				int rnd = rng.Next()%2; // Randomly decide if wall is raised or not.
+				
+				ZWallArray[i][j] = (GameObject)Object.Instantiate
+					(ZWall, new Vector3(i*scale - (mapSize/2) + scale, 1, j*scale -(mapSize/2) + .5f * scale ),Quaternion.identity);
+				ZWallState[i][j] = 1.0f; 
+				
+				ZWallArray[i][j].transform.parent = parent.transform; //sets the GO neatly in heiarchy. 
+				ZWallArray[i][j].GetComponent<WallScript>().Setup(i,j,.75f,-1.75f); //gives the wall info about itself, like its location, max/min height.
+				ZWallArray[i][j].GetComponent<WallScript>().SetParent(ZWallArray[i][j]); // lets the object know about itself.
+				ZWallArray[i][j].GetComponent<WallScript>().SetHeight((float)rnd); // sets height.
+			}
+		}
+		
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		
+		//Every 5 frames randomly move a wall.
+		if(Time.frameCount %5 == 0)
+		{
+			randomlyMoveWall();
+		}
+	}
+	
+	private void randomlyMoveWall()
+	{
+		//Pick a random wall and move it
+		int wallNum = rng.Next()%380;
+		int wallX = wallNum/20; // number between 0-18
+		int wallY = wallNum%20; // number between 0-19
+		WallScript ws;
+		
+		
+		if(rng.Next()%2 == 0)
+		{
+			//Use xWalls	
+			ws = XWallArray[wallY][wallX].GetComponent<WallScript>();
+		}else{
+			//Use zWalls
+			ws = ZWallArray[wallX][wallY].GetComponent<WallScript>();
+		}
+		
+		if(ws.GetHeight() == 1.0f)
+		{
+			ws.SetHeight(0.0f);	
+		}
+		else if(ws.GetHeight() == 0.0f)
+		{
+			ws.SetHeight(1.0f);	
+		}
+	}
+	*/
 	
 	//Public Vars. These are modified in the unity editor.
 	public GameObject WallGO;
@@ -21,18 +145,15 @@ public class WallManager: MonoBehaviour {
 	private GameObject[][] WallArray; // contains the actual walls.
  	private float[][] wallState; // Value can be 0.0-1.0. 0 being all the way to the ground, 1 being fully raised.
 	private System.Random rng;
-	private GameObject parent;
-	bool requestingData = false;
 	
-	void Start()
+	private GameObject parent;
+	
+	public void MakeWalls() //change this later to something like MakeWalls() so the walls can be made when the server starts
 	{
 		rng = new System.Random();
 		parent = GameObject.Find("WallManagerGO");
 		
-		//------------------------------------------//
-		//-------------Wall generation--------------//
-		//------------------------------------------//
-		
+		//Wall generation
 		WallArray = new GameObject[mazeSize][];
 		wallState = new float[mazeSize][];
 		for(int i = 0; i < mazeSize ; i++)
@@ -46,212 +167,21 @@ public class WallManager: MonoBehaviour {
 					(WallGO, new Vector3(i*wallSize,wallSize/2,j*wallSize),Quaternion.identity);
 				WallArray[i][j].transform.parent = parent.transform; //sets the GO neatly in heiarchy. 
 				
+				//Decide if wall is raised or not.
+				int rnd = rng.Next()%2;
+				wallState[i][j] = (float)rnd;
 				
 				//Editing the script component
 				WallScript currentWall = WallArray[i][j].GetComponent<WallScript>();
 				currentWall.Setup(i,j,-wallSize/2,wallSize/2); //gives the wall info about itself, like its location, max/min height.
 				currentWall.SetParent(WallArray[i][j]); // lets the object know about itself.
-				currentWall.SetHeight(1); //All walls start raised.
-				wallState[i][j] = 1; // keep track of the value in wallState.
+				currentWall.SetHeight((float)rnd); // sets height.
 				currentWall.SetSize(wallSize); // sets the cube's size.
 			}
 		}
 		
-		//---------------------------------------//
-		//-----------------Prims-----------------//
-		//---------------------------------------//
 		
-		//Everything in here is only done by the server.
-		
-		if(Network.isServer)
-		{
-		
-			//Having some problems, this was to work-around some dumb error.
-			space fakeSpace;
-			fakeSpace.col = 1000;
-			fakeSpace.row = 1000;
-			fakeSpace.weight = 1000000;
-			fakeSpace.numAdjacentInPath = 0;
-			fakeSpace.partOfPath = false;
-			
-			//all spaces and possible starting Loc for algorithm.
-			space[][] allSpaces;
-			List<space> possibleStarts = new List<space>(); // List containing all the nodes that can be started from.
-			
-			
-			//create a randomly generated weighted graph.
-			allSpaces = new space[mazeSize][];
-			for(int i = 0; i < mazeSize; i++)
-			{
-				allSpaces[i] = new space[mazeSize];
-				for(int j = 0; j < mazeSize; j++)
-				{
-					allSpaces[i][j].weight = rng.Next()%100;
-					allSpaces[i][j].numAdjacentInPath = 0;
-					allSpaces[i][j].partOfPath = false;
-					allSpaces[i][j].row = i;
-					allSpaces[i][j].col = j;
-				}
-			}
-			
-			//Generation Loop.
-			bool isGenerated = false;
-			int numRuns = 0;
-			int curRow = 0;
-			int curCol = 0;
-			
-			List<space> avaliableMoves = new List<space>(); //list for possible moves THIS turn. (used later).
-			
-			//Kinda cheating I guess. First move is made automatically.
-			//Add the starting move to the list of starting moves.
-			possibleStarts.Add(allSpaces[0][0]);
-		
-			allSpaces[0][0].partOfPath = true;
-			allSpaces[0][1].numAdjacentInPath++;
-			allSpaces[1][0].numAdjacentInPath++;
-			
-			while(!isGenerated)
-			{
-				numRuns++; //Debug
-				
-				//Debug.Log("running loop number " + numRuns );+
-				//Debug.Log("++++++ running loop number " + numRuns + ", avaliable starts: " + possibleStarts.Count+" ++++++");
-				
-				
-				//Choose a starting space.
-				int choice = rng.Next()%possibleStarts.Count;
-				curRow = possibleStarts[choice].row;
-				curCol = possibleStarts[choice].col;
-				
-				
-				//Debug.Log("starting at row "+ curRow + ", col "+ curCol);
-				
-				//Add all possible points to path.
-				for(int i = 1; i < 5; i++) // this for loop gets all nearby points.
-				{
-					int row = 0;
-					int col = 0;
-					
-					//Sloppy I know.
-					switch(i)
-					{
-					case 1: row = curRow; col = curCol + 1; break;
-					case 2: row = curRow; col = curCol - 1; break;
-					case 3: row = curRow + 1; col = curCol; break;
-					case 4: row = curRow - 1; col = curCol; break;
-					}
-					
-					if(row >= 0 && row < mazeSize && col >= 0 && col < mazeSize)//make sure its in bounds.
-					{
-						if(allSpaces[row][col].numAdjacentInPath == 1 && !allSpaces[row][col].partOfPath) //This means it is near only one other used space! (which is what we want)
-						{
-							//Debug.Log("adding space at row" + row + ", col "+ col + "to possible moves.");
-							avaliableMoves.Add(allSpaces[row][col]); // adds the space onto a list of possible spaces
-						}
-					}
-					
-				}//All possible moves have been added.
-				
-				
-				//dumb error work-around.
-				space moveChoice = fakeSpace;
-				
-				//If there are moves avaliable...
-				if(avaliableMoves.Count != 0)
-				{
-					//Debug.Log ("There are moves avaliable");
-					//choose one by weight and make the move.
-					for(int i = 0; i < avaliableMoves.Count; i++) // count should be 1-3
-					{
-						if(avaliableMoves[i].weight < moveChoice.weight)
-						{
-							moveChoice = avaliableMoves[i];
-						}
-					}
-					
-					//Debug.Log("chose to move to space at row "+moveChoice.row + "and col "+moveChoice.col + ", added it to graph");
-					//Move has been chosen. Add it to graph.
-					possibleStarts.Add(moveChoice);
-					
-					
-					for(int i = 1; i < 5; i++) // this for loop gets all nearby points.
-					{
-						
-						int r = moveChoice.row;
-						int c = moveChoice.col;
-						allSpaces[r][c].partOfPath = true; // move choice becomes part of graph
-						
-						switch(i)
-						{
-						case 1: r++; break;
-						case 2: r--; break;
-						case 3: c++; break;
-						case 4: c--; break;
-						}
-						
-						//Not going out of bounds...
-						if(c>=0 && c<mazeSize && r>=0 && r<mazeSize)
-						{
-							allSpaces[r][c].numAdjacentInPath++; // spaces near choice have numAdjacent incremented.
-						}
-						
-					}
-					
-					if((avaliableMoves.Count-1) == 0)
-					{
-						//Debug.Log("after moving there were no more moves, removing row " + curRow +", col "+curCol +" from possible starts");
-						//that was our last move from this spot.	
-						//Remove used space from starting list.
-						possibleStarts.RemoveAt(choice);
-					}
-				}
-				else // No moves?
-				{
-					//Debug.Log("no moves, removing space at row "+curRow + ",col " + curCol+ " from possible starts");
-					//Remove used space from starting list.
-					possibleStarts.RemoveAt(choice);
-				}
-				
-				
-				//If there are no more moves, end generation.
-				if(possibleStarts.Count == 0) //possibleStarts.Count == 0
-				{
-					//GGWP generation
-					//Debug.Log("finished with " + numRuns + "runs!");
-					isGenerated = true; // ends loop.
-				}
-				
-				avaliableMoves.Clear();
-				
-			}//End while. At this point, all spaces that are used have the "partofpath" bool set to true.
-			
-			
-			
-			foreach(space[] ss in allSpaces)
-			{
-				foreach(space s in ss)
-				{
-					if(s.partOfPath)
-					{
-						WallScript ws = WallArray[s.row][s.col].GetComponent<WallScript>();
-						wallState[s.row][s.col] = 1; // keep track of state.
-						ws.SetHeight(1); //Set wall down.
-					}
-					else{
-						WallScript ws = WallArray[s.row][s.col].GetComponent<WallScript>();
-						wallState[s.row][s.col] = 0; // keep track of state.
-						ws.SetHeight(0); //Set wall down.
-					}
-				}
-			}
-			
-		}
-		
-		
-		//---------------------------------------//
-		//-------------Outside Walls-------------//
-		//---------------------------------------//
-		
+		//Outside wall Gen.
 		GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		GameObject zMaxWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
 		GameObject zMinWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -269,121 +199,19 @@ public class WallManager: MonoBehaviour {
 		//other walls - should be working!
 		zMaxWall.transform.position = new Vector3(halfDist,permWallHeight/2,fullDist);
 		zMaxWall.transform.localScale = new Vector3(fullDist+wallSize,permWallHeight,wallSize);
-		zMaxWall.name = "zMaxWall";
 		
 		zMinWall.transform.position = new Vector3(halfDist,permWallHeight/2,-wallSize);
 		zMinWall.transform.localScale = new Vector3(fullDist+wallSize,permWallHeight,wallSize);
-		zMinWall.name = "zMinWall";
 		
 		xMaxWall.transform.position = new Vector3(fullDist,permWallHeight/2,halfDist);
 		xMaxWall.transform.localScale = new Vector3(wallSize,permWallHeight,fullDist+wallSize);
-		xMaxWall.name = "xMaxWall";
 		
 		xMinWall.transform.position = new Vector3(-wallSize,permWallHeight/2,halfDist);
 		xMinWall.transform.localScale = new Vector3(wallSize,permWallHeight,fullDist+wallSize);
-		xMinWall.name = "xMinWall";
+		
+		
 		
 	}
 	
 	
-	void Update()
-	{
-		if(Network.isServer)
-		{
-			//Every X frames 
-			if(Time.frameCount%30 == 0)
-			{
-				//pick a random wall
-				int r = rng.Next()%mazeSize;
-				int c = rng.Next()%mazeSize;
-				
-				//get the wallscript
-				WallScript ws = WallArray[r][c].GetComponent<WallScript>();
-				float height = ws.GetHeight();
-				
-				if(height == 1.0f)
-				{
-					ws.SetHeight(0.0f);	
-					//Debug.Log("raising wall at row " + r + ", col "+c);
-				}
-				else if(height == 0.0f)
-				{
-					ws.SetHeight(1.0f);	
-					//Debug.Log("lowering wall at row " + r + ", col "+c);
-				}	
-				
-				networkView.RPC("moveWall",RPCMode.Others,r,c,ws.GetHeight()); 
-			}
-		}
-	}
-	
-	void OnConnectedToServer()
-	{
-		Debug.Log("I am a client and have connected to the server.");	
-		requestingData = true;
-		networkView.RPC("requestData",RPCMode.Server); //send a data request to server.
-	}
-	
-	void OnPlayerConnected()
-	{
-		Debug.Log("I am the server and a client has just connected");	
-	}
-	
-	void SendDataToPlayers()
-	{
-		string dataToSend = "";
-			foreach(GameObject[] GOarray in WallArray)
-			{
-				foreach(GameObject GO in GOarray)
-				{
-					WallScript ws = GO.GetComponent<WallScript>();
-					int r = ws.getRow();
-					int c = ws.getCol();
-					dataToSend += r+","+c+","+ws.GetHeight()+"|";
-				}
-			}
-			
-			dataToSend = dataToSend.Substring(0,dataToSend.Length-1);
-			
-			networkView.RPC("setMaze",RPCMode.Others,dataToSend);
-	}
-	
-	
-	//---------------------------------------//
-	//-----------------RPC's-----------------//
-	//---------------------------------------//
-	
-	[RPC]
-	void setMaze(string data)
-	{
-		if(requestingData)
-		{
-			string[] allDataSplit = data.Split('|');
-			foreach(string str in allDataSplit)
-			{
-				string[] finalSplit = str.Split(','); //0 = row, 1 = col, 2 = raised/lowered.
-				int r = int.Parse(finalSplit[0]);
-				int c = int.Parse(finalSplit[1]);
-				int val = int.Parse(finalSplit[2]);
-				
-				WallScript ws =  WallArray[r][c].GetComponent<WallScript>();
-				ws.SetHeight(val);
-			}
-			requestingData = false;
-		}
-	}
-	
-	[RPC]
-	void requestData()
-	{
-		SendDataToPlayers();	
-	}
-	
-	
-	
-	[RPC]
-	void moveWall(int r, int c, int val)
-	{
-			
-	}
 }
