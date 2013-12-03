@@ -96,7 +96,8 @@ public class NetworkManager : MonoBehaviour
 	void OnServerInitialized ()
 	{
 		Debug.Log("Server is initialzed.");
-		GameObject.Find("WallManagerGO").GetComponent<WallManager>().MakeWalls();
+		//GameObject.Find("WallManagerGO").GetComponent<WallManager>().MakeWalls();
+		//Alex, I'll be using my own OnServerInitialized method anyway. we don't need to call it from here.
 		MakePlayer();
 	}
 	
