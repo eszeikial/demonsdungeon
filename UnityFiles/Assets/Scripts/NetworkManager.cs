@@ -96,9 +96,13 @@ public class NetworkManager : MonoBehaviour
 	void OnServerInitialized ()
 	{
 		Debug.Log("Server is initialzed.");
-		//GameObject.Find("WallManagerGO").GetComponent<WallManager>().MakeWalls();
-		//Alex, I'll be using my own OnServerInitialized method anyway. we don't need to call it from here.
-		MakePlayer();
+		
+		//Create Skull character
+		GameObject spm = GameObject.Find("SpawnManagerGO");
+		GameObject go = spm.GetComponent<SpawnScript>().SpawnServer();
+		int matIndex = int.Parse(Network.player.ToString()) % 3; //increment through the materials
+		Debug.Log("Material Index is " + matIndex);
+		networkView.RPC("NewPlayer", RPCMode.AllBuffered, go.networkView.viewID, matIndex, playerName, Network.player); 
 	}
 	
 	// we are informed that a player has just connected to us (the server)
@@ -114,7 +118,13 @@ public class NetworkManager : MonoBehaviour
 	void OnConnectedToServer ()
 	{
 		Debug.Log ("I'm a client, connected to server");
-		MakePlayer();
+		
+		//Create player character
+		GameObject spm = GameObject.Find("SpawnManagerGO");
+		GameObject go = spm.GetComponent<SpawnScript>().SpawnPlayer();
+		int matIndex = int.Parse(Network.player.ToString()) % 3; //increment through the materials
+		Debug.Log("Material Index is " + matIndex);
+		networkView.RPC("NewPlayer", RPCMode.AllBuffered, go.networkView.viewID, matIndex, playerName, Network.player); 
 	}
 	
 	//called on both client AND server
@@ -278,14 +288,7 @@ public class NetworkManager : MonoBehaviour
 		
 	}
 	
-	void MakePlayer()
-	{
-		GameObject spm = GameObject.Find("SpawnManagerGO");
-		GameObject go = spm.GetComponent<SpawnScript>().SpawnPlayer();
-		int matIndex = int.Parse(Network.player.ToString()) % 3; //increment through the materials
-		Debug.Log("Material Index is " + matIndex);
-		networkView.RPC("NewPlayer", RPCMode.AllBuffered, go.networkView.viewID, matIndex, playerName, Network.player); 
-	}
+
 	
 	[RPC]
 	void NewPlayer(NetworkViewID ID, int matIndex, string pName, NetworkPlayer player)

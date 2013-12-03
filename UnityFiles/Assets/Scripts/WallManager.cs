@@ -292,7 +292,7 @@ public class WallManager: MonoBehaviour {
             if(Network.isServer)
             {
                     //Every X frames 
-                    if(Time.frameCount%30 == 0)
+                    if(Time.frameCount%15 == 0)
                     {
                             //pick a random wall
                             int r = rng.Next()%mazeSize;

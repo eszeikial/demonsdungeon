@@ -4,6 +4,7 @@ using System.Collections;
 public class SpawnScript : MonoBehaviour {
 	
 	public GameObject MagePrefab; //reference to the mage player prefab
+	public GameObject SkullPrefab; //reference the skull prefab
 	private GameObject[] spawnPoints; //array of spawnPoints
 	
 	
@@ -29,6 +30,13 @@ public class SpawnScript : MonoBehaviour {
 	{
 		GameObject sp = GetSpawnPoint();
 		GameObject go = (GameObject)Network.Instantiate(MagePrefab, sp.transform.position, Quaternion.identity, 0);
+		return go;
+	}
+	
+	public GameObject SpawnServer()
+	{
+		GameObject sp = GetSpawnPoint();
+		GameObject go = (GameObject)Network.Instantiate(SkullPrefab, sp.transform.position, Quaternion.identity, 0);
 		return go;
 	}
 }
