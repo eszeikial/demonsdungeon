@@ -344,7 +344,7 @@ public class WallManager: MonoBehaviour {
                     }
 			
 				 dataToSend = dataToSend.Substring(0,dataToSend.Length-1);
-				 Debug.Log("Sending data: "+ dataToSend);
+				 //Debug.Log("Sending data: "+ dataToSend);
             	 networkView.RPC("setMaze",RPCMode.Others,dataToSend);
 				 dataToSend = "";
 				
@@ -366,7 +366,7 @@ public class WallManager: MonoBehaviour {
     void setMaze(string data)
     {
 		
-		Debug.Log ("setmaze called");
+		//Debug.Log ("setmaze called");
 		
 		//This will be sent by the server when it has sent all its data.
 		if(data.Equals("DONE"))
@@ -379,7 +379,7 @@ public class WallManager: MonoBehaviour {
 			//This prevents unnecessary calculations for players who already have map data.
 	        if(requestingData)
 	        {
-				Debug.Log("Recieving data: " + data);
+				//Debug.Log("Recieving data: " + data);
 			
 	                string[] allDataSplit = data.Split('|');
 	                foreach(string str in allDataSplit)

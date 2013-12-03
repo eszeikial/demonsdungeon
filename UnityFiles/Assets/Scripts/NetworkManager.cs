@@ -106,7 +106,7 @@ public class NetworkManager : MonoBehaviour
 	{
 		Debug.Log ("Player " + player + " connected from " + player.ipAddress + ":" + player.port);
 		//GameObject.Find("WallManagerGO").GetComponent<WallManager>().MakeWalls(); //do this for now so we can try to display multiplayer
-		MakePlayer();
+		//MakePlayer();
 	}
 	
 	///-----these messages are sent to the CLIENT
