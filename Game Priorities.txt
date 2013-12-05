@@ -1,0 +1,37 @@
+Top priorities:
+
+-sound
+	-ambient music
+	-sound effects
+		-Raising/lowering walls
+		-mage death
+		-picking up tome
+		-ability usage
+-texturing
+	-walls
+	-materials for mage
+	-skull mat? (white?)
+	-artifacts
+-Spawning
+	-starting location for mages/skull/artifacts
+-mage/skull interaction (death?) *
+	-figure out triggers and what to do upon collision.
+-player/wall interaction (raising/lowering walls) *
+	-figuring out which wall script to access.
+-networking glitch fix
+	-fuk dat lag
+-model size fix *
+	-ezpz
+-objectives (how does the player know about them?) simple fix - beacons. *
+- first person
+
+
+
+Extras:
+
+-fancy objective finding - (floating orb)
+-particle effects on mage staff
+-dungeon ceiling? skybox?
+-broadcast player location
+-skull abilities?
+-tomes have abilities associated with them?
