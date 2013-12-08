@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -18,7 +18,7 @@ public class WallManager: MonoBehaviour {
     public float wallSize; // How large should the cubes be?
     
     //Private Vars
-    private GameObject[][] WallArray; // contains the actual walls.
+    public GameObject[][] WallArray; // contains the actual walls.
      private float[][] wallState; // Value can be 0.0-1.0. 0 being all the way to the ground, 1 being fully raised.
     private System.Random rng;
     private GameObject parent;
