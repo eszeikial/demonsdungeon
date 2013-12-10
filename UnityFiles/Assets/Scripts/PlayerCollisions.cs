@@ -10,7 +10,7 @@ public class PlayerCollisions : MonoBehaviour {
 		{
 			Debug.Log("Mage dead");
 			
-			Network.CloseConnection(Network.player, false);
+			Network.CloseConnection(networkView.owner, false);
 		}
 	}
 }
