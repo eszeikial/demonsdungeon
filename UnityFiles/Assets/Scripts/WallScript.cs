@@ -113,7 +113,7 @@ public class WallScript : MonoBehaviour {
 				}
 			}
 	        
-	        //Calculates the height based on currYLoc.
+	        //Calculates the height based on currYLoc. //PROBABLY CAUSING 0-1 ISSUE
 	        float heightMod = maxHeight - minHeight;
 	        heightMod = heightMod*currYLoc;
 	        
@@ -124,4 +124,17 @@ public class WallScript : MonoBehaviour {
 	        trans.position = new Vector3(xPos,yPos,zPos);
 		}
     }
+	
+	public void setLockedStateFIX()
+	{
+		currYLoc = 1; // down state? the numbers got mixed up somewhere.
+		float heightMod = maxHeight - minHeight;
+        heightMod = heightMod*currYLoc;
+        
+        float yPos = heightMod + minHeight;
+        float xPos = trans.position.x;
+        float zPos = trans.position.z;
+        
+        trans.position = new Vector3(xPos,yPos,zPos);
+	}
 }

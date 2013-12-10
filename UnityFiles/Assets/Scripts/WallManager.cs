@@ -355,12 +355,9 @@ public class WallManager: MonoBehaviour {
 		//Spawn the artifact
 		float artX = (artifactSpawnLoc[0] * wallSize);
 		float artZ = (artifactSpawnLoc[1] * wallSize);
-		Vector3 ArtifactXYZ = new Vector3(artX,1,artZ);
+		Vector3 ArtifactXYZ = new Vector3(artX,0,artZ);
 		Network.Instantiate(artifactPrefab, ArtifactXYZ, Quaternion.identity, 0);
-		
-		//Lock the artifact wall.
-		WallScript artifactWallScript = WallArray[artifactSpawnLoc[0]][artifactSpawnLoc[1]].GetComponent<WallScript>();
-		artifactWallScript.setLockState(true);
+		networkView.RPC("artifactLockNetworked",RPCMode.AllBuffered,artifactSpawnLoc[0],artifactSpawnLoc[1]);
 		
 		//return the location for the player to spawn him too.
 		float x = (spawnLoc[0] * wallSize);
@@ -368,6 +365,16 @@ public class WallManager: MonoBehaviour {
 		
 		return new Vector3(x,3f,z);
 	}
+	
+	[RPC]
+	void artifactLockNetworked(int x, int z)
+	{
+		//Lock the artifact wall.
+		WallScript artifactWallScript = WallArray[x][z].GetComponent<WallScript>();
+		artifactWallScript.setLockState(true);
+		artifactWallScript.setLockedStateFIX(); // dont mind me, just a dumb bug	
+	}
+	
 	
 	
 	int[] findOpenSpaceNear(int x, int z)
