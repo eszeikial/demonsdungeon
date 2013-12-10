@@ -4,7 +4,7 @@ using System.Collections;
 public class WallMoveAbility : MonoBehaviour {
 	
 	
-	
+	//Public vars attached to object prefabs.
 	public string upKey; // keypress to raise wall.
 	public string downKey; // keypress to lower wall.
 	public float power;// amount of wall displacement.

@@ -13,13 +13,14 @@ public class WallManager: MonoBehaviour {
     };
     
     //Public Vars. These are modified in the unity editor.
+	public GameObject artifactPrefab;
     public GameObject WallGO;
     public int mazeSize; // Number of blocks to create on X and Z axis.
     public float wallSize; // How large should the cubes be?
-    
-    //Private Vars
     public GameObject[][] WallArray; // contains the actual walls.
-     private float[][] wallState; // Value can be 0.0-1.0. 0 being all the way to the ground, 1 being fully raised.
+	
+    //Private Vars
+    private float[][] wallState; // Value can be 0.0-1.0. 0 being all the way to the ground, 1 being fully raised.
     private System.Random rng;
     private GameObject parent;
     bool requestingData = false;
@@ -317,6 +318,97 @@ public class WallManager: MonoBehaviour {
                     }
             }
     }
+	
+	public Vector3 generateServerSpawnPoint()
+	{
+		int[] spawnLoc = findOpenSpaceNear((int)mazeSize/2,(int)mazeSize/2); // find space near center.
+		float x = (spawnLoc[0] * wallSize);
+		float z = (spawnLoc[1] * wallSize);
+		
+		return new Vector3(x,3f,z);
+	}
+	
+	public Vector3 generatePlayerSpawnPoint()
+	{
+		int mazeSection = mazeSize/5; // 50 spaces / 5 for now.
+		int[] spawnLoc = new int[2];
+		int[] artifactSpawnLoc = new int[2];
+		
+		int spawnType = rng.Next () % 4;
+		//figuring out where to spawn the mage and his artifact.
+		switch (spawnType)
+		{
+		case 0: spawnLoc = findOpenSpaceNear(mazeSection,mazeSection); // bottom left corner
+			artifactSpawnLoc = findOpenSpaceNear(mazeSize-mazeSection,mazeSize-mazeSection); // top right corner for artifact.
+			break;
+		case 1: spawnLoc = findOpenSpaceNear(mazeSection,mazeSize-mazeSection); //top left corner
+			artifactSpawnLoc = findOpenSpaceNear(mazeSize-mazeSection,mazeSection); // bottom right corner for artifact
+			break;
+		case 2: spawnLoc = findOpenSpaceNear(mazeSize-mazeSection,mazeSection); // bottom right corner
+			artifactSpawnLoc = findOpenSpaceNear(mazeSection,mazeSize-mazeSection); // top left corner for artifact
+			break;
+		case 3: spawnLoc = findOpenSpaceNear(mazeSize-mazeSection,mazeSize-mazeSection); // top right corner
+			artifactSpawnLoc = findOpenSpaceNear(mazeSection,mazeSection);
+			break;
+		}
+		
+		//Spawn the artifact
+		float artX = (artifactSpawnLoc[0] * wallSize);
+		float artZ = (artifactSpawnLoc[1] * wallSize);
+		Vector3 ArtifactXYZ = new Vector3(artX,1,artZ);
+		Network.Instantiate(artifactPrefab, ArtifactXYZ, Quaternion.identity, 0);
+		
+		//Lock the artifact wall.
+		WallScript artifactWallScript = WallArray[artifactSpawnLoc[0]][artifactSpawnLoc[1]].GetComponent<WallScript>();
+		artifactWallScript.setLockState(true);
+		
+		//return the location for the player to spawn him too.
+		float x = (spawnLoc[0] * wallSize);
+		float z = (spawnLoc[1] * wallSize);
+		
+		return new Vector3(x,3f,z);
+	}
+	
+	
+	int[] findOpenSpaceNear(int x, int z)
+	{
+		while(true)
+		{
+			//try to find open space.
+			WallScript ws = WallArray[x][z].GetComponent<WallScript>();
+			if (ws.GetHeight() == 1)
+			{
+				//this X and Y location is good. Break.
+				Debug.Log ("Found open space at x:" + x + ", z:"+z);
+				break;
+			}
+			
+			//This space isn't open, get one nearby then loop.
+			else
+			{
+				//Get random new location nearby.
+				int dir = rng.Next()%4;
+				switch(dir)
+				{
+					case 0: x++; break;
+					case 1: x--; break;
+					case 2: z++; break;
+					case 3: z--; break;
+				}
+				
+				//make sure we don't go OOB.
+				if(x > mazeSize)
+					x--;
+				else if(x < 0)
+					x++;
+				if(z > mazeSize)
+					z--;
+				else if(z < 0)
+					z++;
+			}
+		}
+		return new int[2]{x,z};
+	}
     
     void OnConnectedToServer()
     {
@@ -402,9 +494,7 @@ public class WallManager: MonoBehaviour {
     {
         SendDataToPlayers();        
     }
-    
-    
-    
+   	
     [RPC]
     void moveWall(int r, int c, int val)
     {

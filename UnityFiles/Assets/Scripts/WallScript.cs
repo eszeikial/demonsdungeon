@@ -17,10 +17,12 @@ public class WallScript : MonoBehaviour {
     float yLoc; // must be 0.0-1.0.
     float currYLoc;
 	float motion; // wall moving? Positive = Upwards / Negative = downwards     
+	bool locked;
 
     // Use this for initialization
     void Start () {
 		motion = 0;
+		locked = false;
     }
     
     //Sets the initial values, is called right after being created by WallManager
@@ -50,7 +52,12 @@ public class WallScript : MonoBehaviour {
     {
             return yLoc;        
     }
-    
+	
+	public void setLockState(bool state)
+	{
+		locked = state;	
+	}
+	
     public int getRow(){return row;}
     
     public int getCol(){return col;}
@@ -68,50 +75,53 @@ public class WallScript : MonoBehaviour {
     // Update is called once per frame
     void Update () 
 	{
-		//modify the yLoc by motion. and keep in bounds.
-        yLoc += motion;
-		if(yLoc > 1.0)
-			yLoc = 1.0f;
-		else if(yLoc < 0.0)
-			yLoc = 0.0f;
-		
-		
-		//Prevents jittering
-        if(Mathf.Abs (currYLoc-yLoc) > .05f)
+		if(!locked)
 		{
-                if (currYLoc > yLoc)
-                {
-                        currYLoc -= .05f;
-                }else{
-                        currYLoc += .05f;
-                }
-        }
-		else
-		{
-			//the diff between currYLoc and yloc are 0,
-			//is yLoc between 0.0 and 1.0 and not moving?
-			//if so, move towards 0.0 or 1.0 slowly.
-			if(yLoc > 0.0f && yLoc < 1.0f && motion == 0)
+			//modify the yLoc by motion. and keep in bounds.
+	        yLoc += motion;
+			if(yLoc > 1.0)
+				yLoc = 1.0f;
+			else if(yLoc < 0.0)
+				yLoc = 0.0f;
+			
+			
+			//Prevents jittering
+	        if(Mathf.Abs (currYLoc-yLoc) > .05f)
 			{
-				if (yLoc > .5)
+	                if (currYLoc > yLoc)
+	                {
+	                        currYLoc -= .05f;
+	                }else{
+	                        currYLoc += .05f;
+	                }
+	        }
+			else
+			{
+				//the diff between currYLoc and yloc are 0,
+				//is yLoc between 0.0 and 1.0 and not moving?
+				//if so, move towards 0.0 or 1.0 slowly.
+				if(yLoc > 0.0f && yLoc < 1.0f && motion == 0)
 				{
-					yLoc += .01f;
-				}
-				else // yLoc < .5
-	 			{
-					yLoc -= .01f;
+					if (yLoc > .5)
+					{
+						yLoc += .01f;
+					}
+					else // yLoc < .5
+		 			{
+						yLoc -= .01f;
+					}
 				}
 			}
+	        
+	        //Calculates the height based on currYLoc.
+	        float heightMod = maxHeight - minHeight;
+	        heightMod = heightMod*currYLoc;
+	        
+	        float yPos = heightMod + minHeight;
+	        float xPos = trans.position.x;
+	        float zPos = trans.position.z;
+	        
+	        trans.position = new Vector3(xPos,yPos,zPos);
 		}
-        
-        //Calculates the height based on currYLoc.
-        float heightMod = maxHeight - minHeight;
-        heightMod = heightMod*currYLoc;
-        
-        float yPos = heightMod + minHeight;
-        float xPos = trans.position.x;
-        float zPos = trans.position.z;
-        
-        trans.position = new Vector3(xPos,yPos,zPos);
     }
 }
