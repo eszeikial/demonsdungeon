@@ -99,7 +99,7 @@ public class NetworkManager : MonoBehaviour
 		
 		//Create Skull character
 		GameObject spm = GameObject.Find("SpawnManagerGO");
-		GameObject go = spm.GetComponent<SpawnScript>().SpawnPlayer();
+		GameObject go = spm.GetComponent<SpawnScript>().SpawnServer();
 		int matIndex = int.Parse(Network.player.ToString()) % 3; //increment through the materials
 		Debug.Log("Material Index is " + matIndex);
 		networkView.RPC("NewPlayer", RPCMode.AllBuffered, go.networkView.viewID, matIndex, playerName, Network.player); 
