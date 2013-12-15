@@ -13,6 +13,7 @@ public class WallManager: MonoBehaviour {
     };
     
     //Public Vars. These are modified in the unity editor.
+	public Texture wallTexture;
 	public GameObject artifactPrefab;
     public GameObject WallGO;
     public int mazeSize; // Number of blocks to create on X and Z axis.
@@ -82,18 +83,27 @@ public class WallManager: MonoBehaviour {
         zMaxWall.transform.position = new Vector3(halfDist,permWallHeight/2,fullDist);
         zMaxWall.transform.localScale = new Vector3(fullDist+wallSize,permWallHeight,wallSize);
         zMaxWall.name = "zMaxWall";
+		zMaxWall.renderer.material.SetTexture("_MainTex",wallTexture);
+		zMaxWall.renderer.material.mainTextureScale = new Vector2(mazeSize,2);
         
         zMinWall.transform.position = new Vector3(halfDist,permWallHeight/2,-wallSize);
         zMinWall.transform.localScale = new Vector3(fullDist+wallSize,permWallHeight,wallSize);
         zMinWall.name = "zMinWall";
+		zMinWall.renderer.material.SetTexture("_MainTex",wallTexture);
+		zMinWall.renderer.material.mainTextureScale = new Vector2(mazeSize,2);
         
         xMaxWall.transform.position = new Vector3(fullDist,permWallHeight/2,halfDist);
         xMaxWall.transform.localScale = new Vector3(wallSize,permWallHeight,fullDist+wallSize);
         xMaxWall.name = "xMaxWall";
+		xMaxWall.renderer.material.SetTexture("_MainTex",wallTexture);
+		xMaxWall.renderer.material.mainTextureScale = new Vector2(mazeSize,2);
+		
         
         xMinWall.transform.position = new Vector3(-wallSize,permWallHeight/2,halfDist);
         xMinWall.transform.localScale = new Vector3(wallSize,permWallHeight,fullDist+wallSize);
         xMinWall.name = "xMinWall";
+		xMinWall.renderer.material.SetTexture("_MainTex",wallTexture);
+		xMinWall.renderer.material.mainTextureScale = new Vector2(mazeSize,2);
 	}  
 
 	void OnServerInitialized()
@@ -356,7 +366,8 @@ public class WallManager: MonoBehaviour {
 		float artX = (artifactSpawnLoc[0] * wallSize);
 		float artZ = (artifactSpawnLoc[1] * wallSize);
 		Vector3 ArtifactXYZ = new Vector3(artX,0,artZ);
-		Network.Instantiate(artifactPrefab, ArtifactXYZ, Quaternion.identity, 0);
+		GameObject myArtifact = (GameObject)Network.Instantiate(artifactPrefab, ArtifactXYZ, Quaternion.identity, 0);
+		myArtifact.name = "myArtifact";
 		networkView.RPC("artifactLockNetworked",RPCMode.AllBuffered,artifactSpawnLoc[0],artifactSpawnLoc[1]);
 		
 		//return the location for the player to spawn him too.
@@ -374,8 +385,6 @@ public class WallManager: MonoBehaviour {
 		artifactWallScript.setLockState(true);
 		artifactWallScript.setLockedStateFIX(); // dont mind me, just a dumb bug	
 	}
-	
-	
 	
 	int[] findOpenSpaceNear(int x, int z)
 	{
@@ -422,11 +431,6 @@ public class WallManager: MonoBehaviour {
             Debug.Log("I am a client and have connected to the server.");        
             requestingData = true;
             networkView.RPC("requestData",RPCMode.Server); //send a data request to server.
-    }
-    
-    void OnPlayerConnected()
-    {
-            Debug.Log("I am the server and a client has just connected");        
     }
     
     void SendDataToPlayers()
