@@ -298,7 +298,8 @@ public class NetworkManager : MonoBehaviour
 		NetworkView view = NetworkView.Find(ID);
 		GameObject go = view.observed.gameObject;
 		go.name = pName;
-		//GameObject.Find(go.name + "/Body").renderer.material = materials[matIndex];
+		GameObject.Find(go.name + "MageCharacter/robe").renderer.material = materials[matIndex];
+		GameObject.Find(go.name + "MageCharacter/hat").renderer.material = materials[matIndex];
 		//go.GetComponent<PlayerLabel>().PlayerName = pName;
 	}
 	
