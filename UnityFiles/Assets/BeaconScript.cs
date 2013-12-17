@@ -3,7 +3,7 @@ using System.Collections;
 
 public class BeaconScript : MonoBehaviour {
 	
-	bool gottenArtifact;
+	public bool gottenArtifact;
 	private GameObject[] otherPlayers;
 	
 	// Use this for initialization

@@ -16,7 +16,7 @@ public class FPSInputControl : MonoBehaviour
         motor = GetComponent<CharacterMotor>();
 		
 		if(networkView.isMine){
-			Camera.main.GetComponent<SmoothFollow>().target = transform;
+			Camera.main.GetComponent<MageLook>().target = transform;
 		}
     }
 

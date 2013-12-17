@@ -12,5 +12,14 @@ public class PlayerCollisions : MonoBehaviour {
 			
 			Network.CloseConnection(networkView.owner, false);
 		}
+		
+		if(c.gameObject.tag == "book")
+		{
+			Debug.Log("book picked up");
+			
+			GameObject.Find ("Beacon").GetComponent<BeaconScript>().gottenArtifact = true;
+			Network.Destroy(c.gameObject);
+			
+		}
 	}
 }
