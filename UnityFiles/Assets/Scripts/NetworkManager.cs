@@ -300,6 +300,7 @@ public class NetworkManager : MonoBehaviour
 		go.name = pName;
 		GameObject.Find(go.name + "MageCharacter/robe").renderer.material = materials[matIndex];
 		GameObject.Find(go.name + "MageCharacter/hat").renderer.material = materials[matIndex];
+		GameObject.Find(go.name + "MageCharacter/staff").renderer.material = materials[matIndex];
 		//go.GetComponent<PlayerLabel>().PlayerName = pName;
 	}
 	
