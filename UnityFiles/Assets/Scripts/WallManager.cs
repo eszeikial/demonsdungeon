@@ -15,6 +15,12 @@ public class WallManager: MonoBehaviour {
     //Public Vars. These are modified in the unity editor.
 	public Texture wallTexture;
 	public GameObject artifactPrefab;
+	
+	public GameObject RedTorch;
+	public GameObject YellowTorch;
+	public GameObject BlueTorch;
+	public GameObject GreenTorch;
+	
     public GameObject WallGO;
     public int mazeSize; // Number of blocks to create on X and Z axis.
     public float wallSize; // How large should the cubes be?
@@ -65,7 +71,7 @@ public class WallManager: MonoBehaviour {
         //-------------Outside Walls-------------//
         //---------------------------------------//
         
-        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
         GameObject zMaxWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         GameObject zMinWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         GameObject xMaxWall = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -76,8 +82,10 @@ public class WallManager: MonoBehaviour {
         float permWallHeight = wallSize*2;
         
         //floor - Might not even be necessary? - Wait yes it is. - WAIT NO ITS NOT.
+		/*
         floor.transform.position = new Vector3(halfDist,-.5f,halfDist);
         floor.transform.localScale = new Vector3(fullDist,1,fullDist);
+        */
         
         //other walls - should be working!
         zMaxWall.transform.position = new Vector3(halfDist,permWallHeight/2,fullDist);
@@ -104,6 +112,16 @@ public class WallManager: MonoBehaviour {
         xMinWall.name = "xMinWall";
 		xMinWall.renderer.material.SetTexture("_MainTex",wallTexture);
 		xMinWall.renderer.material.mainTextureScale = new Vector2(mazeSize,2);
+		
+		//---------------------------------------//
+        //----------------Towers-----------------//
+        //---------------------------------------//
+		
+		float wallAdjustment = 2.0f;
+		Object.Instantiate(RedTorch, new Vector3(fullDist,permWallHeight+wallAdjustment,fullDist),Quaternion.identity);
+		Object.Instantiate(YellowTorch, new Vector3(fullDist,permWallHeight+wallAdjustment,-wallSize),Quaternion.identity);
+		Object.Instantiate(GreenTorch, new Vector3(-wallSize,permWallHeight+wallAdjustment,fullDist),Quaternion.identity);
+		Object.Instantiate(BlueTorch, new Vector3(-wallSize,permWallHeight+wallAdjustment,-wallSize),Quaternion.identity);
 	}  
 
 	void OnServerInitialized()
@@ -392,7 +410,7 @@ public class WallManager: MonoBehaviour {
 		{
 			//try to find open space.
 			WallScript ws = WallArray[x][z].GetComponent<WallScript>();
-			if (ws.GetHeight() == 1)
+			if (ws.GetHeight() == 1 && ws.getLockState()==false)
 			{
 				//this X and Y location is good. Break.
 				Debug.Log ("Found open space at x:" + x + ", z:"+z);

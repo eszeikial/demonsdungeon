@@ -58,6 +58,8 @@ public class WallScript : MonoBehaviour {
 		locked = state;	
 	}
 	
+	public bool getLockState(){return locked;}
+	
     public int getRow(){return row;}
     
     public int getCol(){return col;}
